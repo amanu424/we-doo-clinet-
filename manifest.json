@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "We Doo",
+  "version": "1.0.0",
+  "description": "We do do do cool stuff here",
+  "permissions": ["storage"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "icon-16.png",
+      "48": "icon-48.png"
+    }
+  }
+}
