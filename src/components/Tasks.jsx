@@ -26,7 +26,7 @@ const Tasks = () => {
   const [messageType, setMessageType] = useState("success");
   const [openForm, setOpenForm] = useState(false);
   const [tasks, setTasks] = useState([]);
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const n = new Date();
 
   const fetchTasks = async () => {
@@ -173,11 +173,13 @@ const Tasks = () => {
 
   return (
     <>
-      <TaskForm
-        clicked={openForm}
-        closeOverlay={toggleOffAddTask}
-        handleTaskCreation={handleTaskCreation}
-      />
+      {isAuthenticated && (
+        <TaskForm
+          clicked={openForm}
+          closeOverlay={toggleOffAddTask}
+          handleTaskCreation={handleTaskCreation}
+        />
+      )}
 
       <div className="flex space-x-10 items-center justify-between">
         <div className="">
@@ -186,17 +188,23 @@ const Tasks = () => {
             {n.toString().split(" ").slice(0, 4).join(" ")}
           </p>
         </div>
-        <Button
-          disabled={openForm}
-          variant="contained"
-          size="large"
-          onClick={toggleOnAddTask}
-          sx={{ textTransform: "capitalize", px: 2 }}
-          id="add-task"
-          startIcon={<Add />}
-        >
-          Add Task
-        </Button>
+        {isAuthenticated ? (
+          <Button
+            disabled={openForm}
+            variant="contained"
+            size="large"
+            onClick={toggleOnAddTask}
+            sx={{ textTransform: "capitalize", px: 2 }}
+            id="add-task"
+            startIcon={<Add />}
+          >
+            Add Task
+          </Button>
+        ) : (
+          <Button variant="contained">
+            <a href="/login">Login</a>
+          </Button>
+        )}
       </div>
 
       <Tabs
