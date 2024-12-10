@@ -9,6 +9,7 @@ import Header from './components/Header'
 import Tasks from './components/Tasks'
 import Profile from './components/Profile'
 import Login from './components/Login'
+import { Navigate } from "react-router-dom";
 
 const queryClient = new QueryClient()
 
@@ -59,7 +60,7 @@ function App() {
                 <Route path='/messages' element={<Profile />} />
                 <Route path="*" element={
                   <ProtectedRoute>
-                      <Tasks />
+                      <Navigate to="/" />
                     </ProtectedRoute>
                 } />
               </Routes>
