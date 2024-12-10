@@ -14,6 +14,7 @@ import axiosInstance from "../api/axios";
 import { CircularProgress } from "@mui/material";
 import { useAuth } from "../context/AuthContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 
 import TaskForm from "./Form";
 import TaskCard from "./TaskCard";
@@ -167,7 +168,7 @@ const Tasks = () => {
     filter === "all"
       ? true
       : filter === "taken" && task.status == "taken"
-      ? task.user._id == user._id
+      ? task.user._id == user?._id || task.status === 'taken'
       : task.status === filter
   );
 
@@ -202,7 +203,7 @@ const Tasks = () => {
           </Button>
         ) : (
           <Button variant="contained">
-            <a href="/login">Login</a>
+            <Link to="/login">Login</Link>
           </Button>
         )}
       </div>
