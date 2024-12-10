@@ -115,7 +115,7 @@ const Header = (props) => {
             }}
             variant="contained"
           >
-            <a href="/login">Login</a>
+            <></>
           </Button>
         )}
       </AppBar>
