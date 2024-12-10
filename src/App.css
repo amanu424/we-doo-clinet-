@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
+
+body{
+/*  font-family: sans-serif;*/
+   font-family: "Quicksand", serif;
+   background-color: #242424;
+
+
+   display: grid;
+   place-content: center;
+   /* height: 100vh */
+}
+.body-container{
+  margin-top: 2rem;
+  max-width: 24rem;
+  width: 24rem;
+  height: 550px;
+  overflow-y: scroll;
+  position: relative!important;
+  border: 2px solid lightgray;
+  /* border-inline: 5px solid lightgray; */
+  padding-right: 0!important;
+  border-radius: 10px;
+}
+.active {
+  /*color: black!important;
+  font-weight: bold!important;*/
+/*  font-size: 18px!important;*/
+}
+.activeNav{
+/*  border-bottom: 2px solid gray;
+  font-weight: bold!important;
+  color: black!important;*/
+}
+.display-z-mf {
+  display: block;
+}
+.hide{
+  display: none;
+}
+.quicksand-font {
+  font-family: "Quicksand", serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.quicksand-bold {
+  font-family: "Quicksand", serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.bg-custom-gray{
+  background-color: #fefef7;
+}
+
+.options > div:hover{
+  color: rgb(50, 50, 50);
+}
+
+#form, #overlay{
+
+}
+
+.hide-fade{
+  transition: 2s;
+  visibility: hidden;
+}
+
+.show-fade{
+  transition: 1s;
+  visibility: visible!important;
+}
+
+#form{
+  position: absolute;
+  top: 50%;
+  height: fit-content;
+  transform: translateY(-50%);
+}

@@ -1,43 +1,88 @@
-import { useState, useEffect } from 'react';
-import { Box, Button, ButtonGroup, Tab, Tabs, Alert, Snackbar } from '@mui/material';
-import { Add } from '@mui/icons-material';
-import { useQuery } from '@tanstack/react-query';
-import axiosInstance from '../api/axios';
-import { CircularProgress } from '@mui/material';
-import { useAuth } from '../context/AuthContext';
+import { useState, useEffect } from "react";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Tab,
+  Tabs,
+  Alert,
+  Snackbar,
+} from "@mui/material";
+import { Add } from "@mui/icons-material";
+import { useQuery } from "@tanstack/react-query";
+import axiosInstance from "../api/axios";
+import { CircularProgress } from "@mui/material";
+import { useAuth } from "../context/AuthContext";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import TaskForm from './Form';
-import TaskCard from './TaskCard';
+import TaskForm from "./Form";
+import TaskCard from "./TaskCard";
 
 const Tasks = () => {
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState("all");
   const [value, setValue] = useState(0);
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("success");
   const [openForm, setOpenForm] = useState(false);
   const [tasks, setTasks] = useState([]);
-  const { user } = useAuth()
+  const { user } = useAuth();
+  const n = new Date();
+
   const fetchTasks = async () => {
     try {
-      const response = await axiosInstance.get('/tasks');
-      if (response.status === 200) return response.data.data;
+      const response = await axiosInstance.get("/tasks");
+      if (response.status === 200) {
+        return response.data.data;
+      }
 
-      throw response.data.error;
+      // throw response.data.data.error;
+      throw new Error("Error Creating a task");
     } catch (err) {
       console.log(err?.response?.data?.error);
       setOpenSnackbar(true);
-      setMessage('Network Error. Try Again');
-      throw err.response.data.error;
+      setMessage("Network Error. Try Again");
+      console.log(err);
     }
   };
 
-  const { data: testData, isPending, isError } = useQuery({
-    queryKey: ['tasks'],
-    queryFn: fetchTasks,
+  const postTask = async (body) => {
+    try {
+      const response = await axiosInstance.post("/tasks", body);
+      if (response.status !== 201) {
+        throw response.data.error;
+      }
+
+      return response.data;
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: async (body) => await axiosInstance.post("/tasks", body),
     onSuccess: (data) => {
-      // setTasks(data)
-      // console.log('them taksks', data)
+      setTasks(data.data.data);
+      queryClient.invalidateQueries(["tasks"]);
     },
+    onError: (err) => {
+      setTasks((prevTasks) =>
+        prevTasks.filter((task) => task._id !== undefined)
+      );
+      setMessage("Error Occured");
+      setMessageType("error");
+      setOpenSnackbar(true);
+      console.error("Error creating task:", err);
+    },
+  });
+
+  const {
+    data: testData,
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: ["tasks"],
+    queryFn: fetchTasks,
   });
 
   useEffect(() => {
@@ -46,7 +91,14 @@ const Tasks = () => {
 
   if (isPending) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '600px' }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "600px",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -54,7 +106,14 @@ const Tasks = () => {
 
   if (isError) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '600px' }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "600px",
+        }}
+      >
         <h6 className="text-red-400">Network Error</h6>
       </Box>
     );
@@ -74,20 +133,26 @@ const Tasks = () => {
     }
 
     setTasks((prevTasks) =>
-      prevTasks.map((task) => (task._id === updatedTask._id ? updatedTask : task))
+      prevTasks.map((task) =>
+        task._id === updatedTask._id ? updatedTask : task
+      )
     );
   };
 
   const handleTaskCreation = (newTask) => {
-    setTasks((prevTasks) => [
-      {
-        _id: Date.now(),
-        status: 'free',
-        user: null,
-        name: newTask.name
-      },
-      ...prevTasks,
-    ]);
+    try {
+      setTasks((prevTasks) => [
+        {
+          status: "free",
+          user: null,
+          name: newTask.name,
+        },
+        ...prevTasks,
+      ]);
+      mutation.mutate(newTask);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const toggleOnAddTask = () => {
@@ -98,29 +163,35 @@ const Tasks = () => {
     setOpenForm(false);
   };
 
-  const filterdData = testData?.filter(
-    (task) => (filter === 'all' ? true : task.status === filter)
-  );
-
-  const filterdTasks = tasks?.filter(
-    (task) => (filter === 'all' ? true : (filter === 'taken' && task.status == 'taken') ? task.user._id == user._id : task.status === filter)
+  const filterdTasks = tasks?.filter((task) =>
+    filter === "all"
+      ? true
+      : filter === "taken" && task.status == "taken"
+      ? task.user._id == user._id
+      : task.status === filter
   );
 
   return (
     <>
-      <TaskForm clicked={openForm} closeOverlay={toggleOffAddTask} handleTaskCreation={handleTaskCreation} />
+      <TaskForm
+        clicked={openForm}
+        closeOverlay={toggleOffAddTask}
+        handleTaskCreation={handleTaskCreation}
+      />
 
       <div className="flex space-x-10 items-center justify-between">
         <div className="">
-          <h1 className="font-bold text-2xl">Today's Tasks</h1>
-          <p className="text-sm text-gray-500">Monday, 11 March</p>
+          <h1 className="font-bold text-2xl">Tasks</h1>
+          <p className="text-sm text-gray-500">
+            {n.toString().split(" ").slice(0, 4).join(" ")}
+          </p>
         </div>
         <Button
           disabled={openForm}
           variant="contained"
           size="large"
           onClick={toggleOnAddTask}
-          sx={{ textTransform: 'capitalize', px: 2 }}
+          sx={{ textTransform: "capitalize", px: 2 }}
           id="add-task"
           startIcon={<Add />}
         >
@@ -135,17 +206,37 @@ const Tasks = () => {
         className="flex justify-between font-bold text-gray-500 px-1 border-b border-gray-300 my-2 py-3 w-full options"
         id="task-filters"
       >
-        <Tab label="All" sx={{ textTransform: 'capitalize' }} onClick={() => setFilter('all')} />
-        <Tab label="Free" sx={{ textTransform: 'capitalize' }} onClick={() => setFilter('free')} />
-        <Tab label="Taken" sx={{ textTransform: 'capitalize' }} onClick={() => setFilter('taken')} />
-        <Tab label="Completed" sx={{ textTransform: 'capitalize' }} onClick={() => setFilter('completed')} />
+        <Tab
+          label="All Tasks"
+          sx={{ textTransform: "capitalize" }}
+          onClick={() => setFilter("all")}
+        />
+        <Tab
+          label="Free"
+          sx={{ textTransform: "capitalize" }}
+          onClick={() => setFilter("free")}
+        />
+        <Tab
+          label="Taken"
+          sx={{ textTransform: "capitalize" }}
+          onClick={() => setFilter("taken")}
+        />
+        <Tab
+          label="Completed"
+          sx={{ textTransform: "capitalize" }}
+          onClick={() => setFilter("completed")}
+        />
       </Tabs>
-
       <Box className="grid grid-cols-1 gap-5 my-5 py-3" id="cards">
-        {testData &&
+        {tasks?.length > 0 &&
           filterdTasks &&
-          filterdTasks.map((task) => (
-            <TaskCard key={task._id} data={task} allTasks={tasks} onDataUpdate={handleTaskUpdate} />
+          filterdTasks.map((task, index) => (
+            <TaskCard
+              key={task._id || index}
+              data={task}
+              allTasks={tasks}
+              onDataUpdate={handleTaskUpdate}
+            />
           ))}
       </Box>
 
@@ -154,9 +245,9 @@ const Tasks = () => {
         open={openSnackbar}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert severity="success" onClose={handleCloseSnackbar}>
+        <Alert severity={messageType} onClose={handleCloseSnackbar}>
           {message}
         </Alert>
       </Snackbar>

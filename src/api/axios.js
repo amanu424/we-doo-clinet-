@@ -1,7 +1,9 @@
 import axios from 'axios'
 
 const axiosInstance = axios.create({
-	baseURL: "http://localhost:4000/api"
+	baseURL: "https://we-do-theta.vercel.app/api"
+	// baseURL: "http://localhost:4000/api"
+
 });
 
 axiosInstance.interceptors.request.use(
