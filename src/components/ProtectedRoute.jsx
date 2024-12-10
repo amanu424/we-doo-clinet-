@@ -7,7 +7,7 @@ const ProtectedRoute = ({ children }) => {
 
   if (!isAuthenticated) {
     // If the user is not authenticated, redirect to login
-    // return <Navigate to="/tasks" />;
+    // return <Navigate to="/" />;
   }
 
   return children; // Render the children if authenticated

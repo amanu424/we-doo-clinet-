@@ -16,8 +16,8 @@ import { useAuth } from "../context/AuthContext";
 const Header = (props) => {
   const location = useLocation();
   const { logout, user } = useAuth();
-  // const [currentTab, setCurrentTab] = useState(location.pathname)     // this is for browsers
-  const [currentTab, setCurrentTab] = useState("/");
+  const [currentTab, setCurrentTab] = useState(location.pathname)     // this is for browsers
+  // const [currentTab, setCurrentTab] = useState("/");
   const [currentIndex, setCurrentIndex] = useState(1);
   const [prvTabIndex, setPrvTabIndex] = useState(null);
 

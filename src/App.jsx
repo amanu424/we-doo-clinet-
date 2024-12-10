@@ -56,7 +56,7 @@ function App() {
                   }
                 />
                 <Route path='/profile' element={<Profile />} />
-                <Route path='/messages' element={<Tasks />} />
+                <Route path='/messages' element={<Profile />} />
               </Routes>
             </main>
           </div>

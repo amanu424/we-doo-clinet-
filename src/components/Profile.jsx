@@ -1,8 +1,11 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "../context/AuthContext";
 
 import axiosInstance from "../api/axios";
 const Profile = (props) => {
+    const { user } = useAuth();
+
   const fetchProfile = async () => {
     try {
       const response = await axiosInstance.get("/profile");
@@ -13,6 +16,9 @@ const Profile = (props) => {
     }
   };
 
+  if(!user) {
+    return (<h1 style={{color: 'red'}}> Login To Access This Page </h1>)
+  }
   const { data, isPending, isError } = useQuery({
     queryKey: ["profile"],
     queryFn: fetchProfile,
@@ -21,8 +27,7 @@ const Profile = (props) => {
   return (
     <>
       <h1 className="font-bold text-2xl">Profile</h1>
-
-      {data && (
+      {user && data && (
         <>
           <h2> Hi, Mname is... mName is {data.profile.name} </h2>
           <h4>
