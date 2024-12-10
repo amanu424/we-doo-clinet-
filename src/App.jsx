@@ -57,6 +57,11 @@ function App() {
                 />
                 <Route path='/profile' element={<Profile />} />
                 <Route path='/messages' element={<Profile />} />
+                <Route path="*" element={
+                  <ProtectedRoute>
+                      <Tasks />
+                    </ProtectedRoute>
+                } />
               </Routes>
             </main>
           </div>
