@@ -29,7 +29,7 @@ const TaskCard = ({ data, onDataUpdate, allTasks }) => {
   const [msgType, setMsgType] = useState("success");
   const [hovered, setHovered] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   // Update task state when the data prop changes
   useEffect(() => {
     setTask(data);
@@ -136,7 +136,7 @@ const TaskCard = ({ data, onDataUpdate, allTasks }) => {
           </p>
         </div>
 
-        {task._id && (
+        {user && task._id && (
           <div className="group relative">
             {task.status === "free" ? (
               <Tooltip title={"Click to take the task"} arrow>
@@ -214,7 +214,7 @@ const TaskCard = ({ data, onDataUpdate, allTasks }) => {
         {/*Place holder for something {task.status.charAt(0).toUpperCase() + task.status.slice(1)}*/}
       </div>
 
-      {task.uploadedBy == user._id ? (
+      {user && task.uploadedBy == user._id ? (
         <Tooltip title={"Click to remove this task"} arrow>
           <Close
             onClick={() => handleDeleteTask(task._id, "Task deleted")}
