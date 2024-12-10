@@ -58,10 +58,10 @@ function App() {
                 />
                 <Route path='/profile' element={<Profile />} />
                 <Route path='/messages' element={<Profile />} />
-                <Route path="*" element={
-                  <ProtectedRoute>
+                <Route path="/*" element={
+              
                       <Navigate to="/" />
-                    </ProtectedRoute>
+                  
                 } />
               </Routes>
             </main>

@@ -50,6 +50,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
     setIsAuthenticated(false);
+    setUser(null)
     navigate("/tasks"); // Redirect to login page after logout
   };
 
